@@ -1,0 +1,486 @@
+<meta name='viewport' content='width=device-width, initial-scale=1'/><!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Чиз-Биз -- финальный</title>
+<style>
+:root{
+  --bg:#000;
+  --surface:#0d0d0d;
+  --muted:#9b9b9b;
+  --white:#ffffff;
+  --danger:#ff5c5c;
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0;font-family:Inter, Arial, sans-serif;background:var(--bg);color:var(--white);-webkit-font-smoothing:antialiased}
+.hidden{display:none}
+
+/* SPLASH */
+#splash{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#000;z-index:9999}
+.splash-logo{width:320px;max-width:84vw;display:flex;flex-direction:column;align-items:center;gap:12px}
+.splash-logo img{width:100%;height:auto;border-radius:18px;box-shadow:0 10px 40px rgba(255,255,255,0.06);animation:logoIn 1200ms ease-out}
+.splash-sub{color:var(--white);font-weight:800;letter-spacing:1px}
+@keyframes logoIn{0%{opacity:0;transform:scale(.95)}50%{opacity:1;transform:scale(1.02)}100%{opacity:1;transform:scale(1)}}
+
+/* APP */
+#app{display:none;min-height:100vh;flex-direction:column}
+header{display:flex;align-items:center;justify-content:center;padding:14px;background:#000;border-bottom:1px solid rgba(255,255,255,0.03)}
+.header-logo{width:180px;max-width:46vw}
+.header-logo img{width:100%;height:auto;border-radius:12px;box-shadow:0 6px 30px rgba(255,255,255,0.06);animation:pulse 3s infinite}
+@keyframes pulse{0%{transform:scale(.995);opacity:.9}50%{transform:scale(1);opacity:1}100%{transform:scale(.995);opacity:.9}}
+
+/* layout */
+.container{padding:14px;padding-bottom:120px}
+.card{background:linear-gradient(180deg,#0b0b0b,#0f0f0f);border-radius:12px;padding:12px;margin-bottom:12px;border:1px solid rgba(255,255,255,0.02)}
+h2{margin:0 0 8px 0;color:var(--white)}
+.muted{color:var(--muted);font-size:13px}
+
+/* menu */
+.menu-list{display:flex;flex-direction:column;gap:12px}
+.menu-item{display:flex;gap:12px;align-items:center;background:linear-gradient(180deg,#0d0d0d,#111);padding:10px;border-radius:12px}
+.thumb{width:100px;height:72px;border-radius:10px;object-fit:cover;flex-shrink:0}
+.menu-info{flex:1}
+.menu-info h3{font-size:16px;margin-bottom:4px}
+.menu-right{display:flex;flex-direction:column;align-items:flex-end;gap:8px}
+.price{font-weight:900;color:var(--white)}
+.qty-controls{display:flex;align-items:center;gap:6px}
+.qty-controls button{width:34px;height:34px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:#0b0b0b;color:var(--white);font-weight:800;cursor:pointer}
+.qty-controls input{width:48px;text-align:center;border-radius:8px;border:1px solid rgba(255,255,255,0.03);padding:6px;background:#0b0b0b;color:var(--white)}
+.add-btn{background:var(--white);border:none;color:#000;padding:8px 12px;border-radius:10px;font-weight:900;cursor:pointer}
+
+/* cart */
+.cart-list{display:flex;flex-direction:column;gap:10px}
+.cart-item{display:flex;gap:12px;align-items:center;background:#0f0f0f;padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,0.02)}
+.cart-item img{width:84px;height:68px;border-radius:8px;object-fit:cover}
+.cart-meta{flex:1}
+.cart-actions{display:flex;flex-direction:column;align-items:flex-end;gap:8px}
+.remove-btn{background:transparent;border:none;color:var(--danger);cursor:pointer;font-weight:700}
+.total-row{display:flex;justify-content:space-between;align-items:center;margin-top:12px}
+
+/* profile */
+.profile-top{display:flex;gap:14px;align-items:center}
+.avatar{width:84px;height:84px;border-radius:50%;background:#111;display:flex;align-items:center;justify-content:center;font-weight:900;color:var(--white);font-size:28px}
+
+/* bottom nav */
+.bottom-nav{position:fixed;left:12px;right:12px;bottom:12px;height:72px;background:#0b0b0b;display:flex;justify-content:space-around;align-items:center;border-radius:18px;padding:8px;border:1px solid rgba(255,255,255,0.03);z-index:999}
+.nav-btn{display:flex;flex-direction:column;align-items:center;gap:4px;color:var(--muted);background:transparent;border:none;cursor:pointer}
+.nav-btn.active{color:var(--white);font-weight:900}
+.nav-btn svg{width:22px;height:22px}
+
+/* modal */
+.modal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,0.6);z-index:2000}
+.modal-box{width:92%;max-width:480px;background:linear-gradient(180deg,#0b0b0b,#0f0f0f);border-radius:12px;padding:16px;border:1px solid rgba(255,255,255,0.03)}
+.bank-row{display:flex;gap:10px;align-items:center;margin-top:12px}
+.bank-row img{height:36px;object-fit:contain}
+
+/* reviews */
+.reviews-list{display:flex;flex-direction:column;gap:8px}
+.review-item{background:#0f0f0f;padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,0.02)}
+.review-form{display:flex;flex-direction:column;gap:8px}
+
+/* responsive */
+@media(min-width:900px){ .container{max-width:900px;margin:0 auto} .bottom-nav{left:calc(50% - 440px);right:calc(50% - 440px)} }
+</style>
+</head>
+<body>
+
+<!-- SPLASH -->
+<div id="splash" role="dialog" aria-hidden="false">
+  <div class="splash-logo" aria-hidden="true">
+    <img src="logo-chiz-biz.png" alt="Чиз-Биз логотип" id="splashLogo">
+  </div>
+  <div class="splash-sub">МАЗЗАИ НОТАКРОР</div>
+</div>
+
+<!-- APP -->
+<div id="app" aria-hidden="true">
+  <header>
+    <div class="header-logo" role="img" aria-label="Чиз-Биз логотип">
+      <img src="logo-chiz-biz.png" alt="Чиз-Биз логотип">
+    </div>
+  </header>
+
+  <main class="container">
+    <!-- HOME -->
+    <section id="page-home" class="page card">
+      <h2>Добро пожаловать в Чиз-Биз</h2>
+      <div class="muted">Быстрый заказ прямо с главной</div>
+
+      <div style="margin-top:12px" class="card">
+        <input id="search" placeholder="Поиск по меню" style="width:100%;padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,0.03);background:transparent;color:var(--white)" oninput="applySearch()" />
+      </div>
+
+      <div style="margin-top:12px">
+        <div class="menu-list" id="menuList"></div>
+      </div>
+    </section>
+
+    <!-- MENU full -->
+    <section id="page-menu" class="page card hidden">
+      <h2>Меню -- все блюда</h2>
+      <div class="menu-list" id="menuListFull" style="margin-top:12px"></div>
+    </section>
+
+    <!-- CART -->
+    <section id="page-cart" class="page card hidden">
+      <h2>Корзина</h2>
+      <div id="cartList" class="cart-list" style="margin-top:10px"></div>
+      <div class="total-row">
+        <div class="muted">Итого</div>
+        <div style="font-weight:900;color:var(--white)" id="cartTotal">0 сомони</div>
+      </div>
+      <div style="margin-top:12px">
+        <button class="add-btn" onclick="openPayment()" style="width:100%;">Оплатить</button>
+      </div>
+    </section>
+
+    <!-- ORDERS -->
+    <section id="page-orders" class="page card hidden">
+      <h2>Заказы</h2>
+      <div id="ordersList" style="margin-top:12px"></div>
+      <div id="noOrders" class="muted" style="margin-top:12px">Пока нет оплаченных заказов</div>
+    </section>
+
+    <!-- REVIEWS -->
+    <section id="page-reviews" class="page card hidden">
+      <h2>Отзывы</h2>
+      <div class="card">
+        <form id="reviewForm" class="review-form" onsubmit="submitReview(event)">
+          <input id="revName" placeholder="Ваше имя" style="padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.03);background:transparent;color:var(--white)"/>
+          <textarea id="revText" placeholder="Ваш отзыв" rows="3" style="padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.03);background:transparent;color:var(--white)"></textarea>
+          <div style="display:flex;gap:8px">
+            <button class="add-btn" type="submit">Оставить отзыв</button>
+            <button type="button" class="add-btn" style="background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--white)" onclick="clearReviews()">Очистить отзывы</button>
+          </div>
+        </form>
+      </div>
+      <div style="margin-top:12px" class="reviews-list" id="reviewsList"></div>
+    </section>
+
+    <!-- PROFILE -->
+    <section id="page-profile" class="page card hidden">
+      <div class="profile-top">
+        <div class="avatar" id="avatarLetter">Г</div>
+        <div>
+          <div id="profileName" style="font-weight:900">Гость</div>
+          <div class="muted" id="profilePhone">+992000008588</div>
+          <div class="profile-actions" style="margin-top:8px">
+            <button class="add-btn" onclick="editProfile()">Редактировать</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="settings" style="margin-top:12px">
+        <div class="card setting-row"><div>Адрес</div><div class="muted">Таджикистан, Душанбе, 102 мкр</div></div>
+        <div class="card setting-row" onclick="openPaymentSettings()"><div>Оплата</div><div class="muted">Платежные реквизиты</div></div>
+        <div class="card setting-row"><div>Уведомления</div><div class="muted">Включены</div></div>
+      </div>
+    </section>
+  </main>
+
+  <!-- bottom nav -->
+  <div class="bottom-nav" role="navigation" aria-label="Навигация">
+    <button class="nav-btn active" id="navHome" onclick="nav('home')">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M3 11.5L12 4l9 7.5" stroke="currentColor" stroke-width="1.6"/></svg>
+      Главная
+    </button>
+    <button class="nav-btn" id="navMenuBtn" onclick="nav('menu')">
+      <svg viewBox="0 0 24 24" fill="none"><rect x="3" y="6" width="18" height="3" rx="1.5" stroke="currentColor" stroke-width="1.6"/><rect x="3" y="15" width="18" height="3" rx="1.5" stroke="currentColor" stroke-width="1.6"/></svg>
+      Меню
+    </button>
+    <button class="nav-btn" id="navCartBtn" onclick="nav('cart')">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M6 6h15l-1.5 9H8L6 6z" stroke="currentColor" stroke-width="1.5"/><circle cx="10" cy="19" r="1.5" fill="currentColor"/><circle cx="18" cy="19" r="1.5" fill="currentColor"/></svg>
+      Корзина
+    </button>
+    <button class="nav-btn" id="navOrdersBtn" onclick="nav('orders')">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M3 7h18M7 11h10M7 15h10" stroke="currentColor" stroke-width="1.5"/></svg>
+      Заказы
+    </button>
+    <button class="nav-btn" id="navProfileBtn" onclick="nav('profile')">
+      <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="3" stroke="currentColor" stroke-width="1.5"/><path d="M6 20c0-3 3-5 6-5s6 2 6 5" stroke="currentColor" stroke-width="1.5"/></svg>
+      Профиль
+    </button>
+  </div>
+</div>
+
+<!-- PAYMENT modal -->
+<div id="paymentModal" class="modal" aria-hidden="true">
+  <div class="modal-box">
+    <h3 style="margin:0;color:var(--white)">Оплата</h3>
+    <div class="muted" style="margin-top:8px">Выберите банк и переведите сумму на номер</div>
+    <div class="bank-row">
+      <label style="display:flex;align-items:center;gap:8px;cursor:pointer">
+        <input type="radio" name="bank" value="Alif" checked> <img src="https://upload.wikimedia.org/wikipedia/commons/2/25/Alif_Bank_logo.png" alt="Alif Bank">
+      </label>
+      <label style="display:flex;align-items:center;gap:8px;cursor:pointer">
+        <input type="radio" name="bank" value="Dushanbe"> <img src="https://upload.wikimedia.org/wikipedia/commons/6/6a/Dushanbe_City_Bank_logo.png" alt="Dushanbe City Bank">
+      </label>
+    </div>
+    <div style="margin-top:12px">
+      <div class="muted">Номер для оплаты</div>
+      <div style="font-weight:900;color:var(--white);margin-top:6px">+992000008588</div>
+    </div>
+    <div style="display:flex;gap:8px;margin-top:14px">
+      <button onclick="confirmPayment()" style="flex:1;background:var(--white);border:none;padding:10px;border-radius:10px;color:#000;font-weight:900;cursor:pointer">Я оплатил</button>
+      <button onclick="closePayment()" style="flex:1;border:1px solid rgba(255,255,255,0.06);background:transparent;padding:10px;border-radius:10px;cursor:pointer">Отмена</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ====== Data ====== */
+const DEFAULT_MENU = [
+  {name:"Особый чиз-биз", price:25, category:"Бургеры", img:"https://images.unsplash.com/photo-1599029403151-6d1b5f7acd9b?auto=format&fit=crop&w=900&q=80"},
+  {name:"Донер куриный", price:20, category:"Шаурма", img:"https://images.unsplash.com/photo-1604908177222-2f17b4906b2a?auto=format&fit=crop&w=900&q=80"},
+  {name:"Донер шашлычный", price:30, category:"Шаурма", img:"https://images.unsplash.com/photo-1601924928350-849f7b2f7a0f?auto=format&fit=crop&w=900&q=80"},
+  {name:"Табака на мангале", price:60, category:"Горячие", img:"https://images.unsplash.com/photo-1549303604-1f8b7f7b8d3b?auto=format&fit=crop&w=900&q=80"},
+  {name:"Хот-дог особый", price:15, category:"Хот-доги", img:"https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=900&q=80"},
+  {name:"Фри 100г", price:12, category:"Закуски", img:"https://images.unsplash.com/photo-1542144612-1c6b0b3a6b4b?auto=format&fit=crop&w=900&q=80"},
+  {name:"Кофе", price:5, category:"Напитки", img:"https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=900&q=80"}
+];
+
+let MENU = JSON.parse(localStorage.getItem('cb_menu') || 'null') || DEFAULT_MENU;
+let cart = JSON.parse(localStorage.getItem('cb_cart') || '[]');
+let orders = JSON.parse(localStorage.getItem('cb_orders') || '[]');
+let profile = JSON.parse(localStorage.getItem('cb_profile') || '{"name":"Гость","phone":"+992000008588"}');
+let reviews = JSON.parse(localStorage.getItem('cb_reviews') || '[]');
+
+/* ====== UI refs ====== */
+const menuList = document.getElementById('menuList');
+const menuListFull = document.getElementById('menuListFull');
+const cartListEl = document.getElementById('cartList');
+const cartTotalEl = document.getElementById('cartTotal');
+const ordersListEl = document.getElementById('ordersList');
+const noOrdersEl = document.getElementById('noOrders');
+const reviewsListEl = document.getElementById('reviewsList');
+const paymentModal = document.getElementById('paymentModal');
+
+/* ====== Splash -> app ====== */
+window.addEventListener('load', () => {
+  // show splash for 3 seconds, then show app
+  setTimeout(()=> {
+    const s = document.getElementById('splash');
+    s.style.transition='opacity 400ms';
+    s.style.opacity='0';
+    setTimeout(()=> {
+      s.style.display='none';
+      document.getElementById('app').style.display='block';
+      startApp();
+    },420);
+  },3000);
+});
+
+/* ====== Start ====== */
+function startApp(){
+  renderHome();
+  renderMenuFull();
+  renderCart();
+  renderOrders();
+  renderProfile();
+  renderReviews();
+  // ensure home visible
+  nav('home');
+}
+
+/* ====== NAV ====== */
+function nav(page){
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.page').forEach(p=>p.classList.add('hidden'));
+  if(page==='home'){ document.getElementById('navHome').classList.add('active'); document.getElementById('page-home').classList.remove('hidden'); }
+  if(page==='menu'){ document.getElementById('navMenuBtn').classList.add('active'); document.getElementById('page-menu').classList.remove('hidden'); }
+  if(page==='cart'){ document.getElementById('navCartBtn').classList.add('active'); document.getElementById('page-cart').classList.remove('hidden'); }
+  if(page==='orders'){ document.getElementById('navOrdersBtn').classList.add('active'); document.getElementById('page-orders').classList.remove('hidden'); }
+  if(page==='reviews'){ document.getElementById('page-reviews').classList.remove('hidden'); document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active')); }
+  if(page==='profile'){ document.getElementById('navProfileBtn').classList.add('active'); document.getElementById('page-profile').classList.remove('hidden'); }
+}
+
+/* ====== Render Home ====== */
+function renderHome(){
+  if(!menuList) return;
+  menuList.innerHTML='';
+  MENU.slice(0,6).forEach((item, idx) => {
+    const node = document.createElement('div'); node.className = 'menu-item';
+    node.innerHTML = `
+      <img class="thumb" src="${item.img}" alt="${item.name}">
+      <div class="menu-info"><h3>${item.name}</h3><div class="muted">${item.category}</div></div>
+      <div class="menu-right">
+        <div class="price">${item.price} сом</div>
+        <div style="margin-top:8px;display:flex;align-items:center;gap:8px">
+          <div class="qty-controls"><button onclick="changeLocalQty(this,-1)">−</button><input type="number" value="1" min="1"><button onclick="changeLocalQty(this,1)">+</button></div>
+          <button class="add-btn" onclick="addFromHome(${idx}, this)">Заказать</button>
+        </div>
+      </div>
+    `;
+    menuList.appendChild(node);
+  });
+}
+
+/* ====== Render full menu ====== */
+function renderMenuFull(){
+  if(!menuListFull) return;
+  menuListFull.innerHTML='';
+  MENU.forEach((m, idx) => {
+    const node = document.createElement('div'); node.className='menu-item';
+    node.style.justifyContent='space-between';
+    node.innerHTML = `
+      <img class="thumb" src="${m.img}" alt="${m.name}">
+      <div class="menu-info"><h3>${m.name}</h3><div class="muted">${m.category}</div></div>
+      <div class="menu-right">
+        <div class="price">${m.price} сом</div>
+        <div style="margin-top:8px;display:flex;align-items:center;gap:8px">
+          <div class="qty-controls"><button onclick="changeLocalQty(this,-1)">−</button><input class="local-qty" type="number" value="1" min="1"><button onclick="changeLocalQty(this,1)">+</button></div>
+          <button class="add-btn" onclick="addFromMenu(${idx}, this)">Добавить</button>
+        </div>
+      </div>
+    `;
+    menuListFull.appendChild(node);
+  });
+}
+
+/* ====== Local qty ====== */
+function changeLocalQty(btn, delta){
+  const card = btn.closest('.menu-item') || btn.closest('.card');
+  const input = card.querySelector('input[type="number"], .local-qty');
+  if(!input) return;
+  let v = parseInt(input.value) || 1;
+  v = Math.max(1, v + delta);
+  input.value = v;
+}
+
+/* ====== Add to cart ====== */
+function addFromHome(idx, btn){ const card = btn.closest('.menu-item'); const qty = parseInt(card.querySelector('input[type="number"]').value) || 1; addItemToCart(MENU[idx], qty); }
+function addFromMenu(idx, btn){ const card = btn.closest('.menu-item'); const qty = parseInt(card.querySelector('.local-qty').value) || 1; addItemToCart(MENU[idx], qty); }
+function addItemToCart(item, qty){
+  const exist = cart.find(c=>c.name===item.name);
+  if(exist) exist.quantity = (exist.quantity||0) + qty;
+  else cart.push({...item, quantity: qty});
+  saveState(); renderCart(); nav('cart'); showToast(`${item.name} x${qty} добавлен(ы)`);
+}
+
+/* ====== Cart ====== */
+function renderCart(){
+  if(!cartListEl) return;
+  cartListEl.innerHTML='';
+  if(cart.length===0){ cartListEl.innerHTML='<div class="muted">Корзина пуста</div>'; cartTotalEl.innerText='0 сомони'; return; }
+  let total=0;
+  cart.forEach((c,i)=>{
+    total += c.price * (c.quantity||1);
+    const d = document.createElement('div'); d.className='cart-item';
+    d.innerHTML = `
+      <img src="${c.img}" alt="${c.name}">
+      <div class="cart-meta"><div style="font-weight:900">${c.name}</div><div class="muted">${c.price} сом</div></div>
+      <div class="cart-actions">
+        <div style="display:flex;align-items:center;gap:6px">
+          <button onclick="changeCartQty(${i}, -1)" style="width:34px;height:34px;border-radius:8px;border:1px solid rgba(255,255,255,0.03);background:transparent;color:var(--white);font-weight:800">−</button>
+          <div style="min-width:36px;text-align:center">${c.quantity}</div>
+          <button onclick="changeCartQty(${i}, 1)" style="width:34px;height:34px;border-radius:8px;border:1px solid rgba(255,255,255,0.03);background:transparent;color:var(--white);font-weight:800">+</button>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center;margin-top:8px">
+          <div style="font-weight:900;color:var(--white)">${(c.price*(c.quantity||1)).toFixed(2)} сом</div>
+          <button class="remove-btn" onclick="removeCart(${i})">Удалить</button>
+        </div>
+      </div>
+    `;
+    cartListEl.appendChild(d);
+  });
+  cartTotalEl.innerText = total.toFixed(2) + ' сомони';
+  saveState();
+}
+function changeCartQty(i, delta){ cart[i].quantity = Math.max(1, (cart[i].quantity||1) + delta); renderCart(); }
+function removeCart(i){ cart.splice(i,1); renderCart(); }
+
+/* ====== Payment modal ====== */
+function openPayment(){ if(cart.length===0){ showToast('Корзина пуста'); return; } paymentModal.style.display='flex'; }
+function closePayment(){ paymentModal.style.display='none'; }
+function confirmPayment(){
+  const total = cart.reduce((s,i)=>s + i.price * i.quantity, 0);
+  const order = { id:'CB'+Date.now(), items: JSON.parse(JSON.stringify(cart)), total, date: new Date().toLocaleString(), name: profile.name || 'Гость' };
+  orders.unshift(order);
+  cart = [];
+  saveState(); renderCart(); renderOrders(); closePayment(); showToast('Оплата подтверждена -- заказ сохранён'); nav('orders');
+}
+
+/* ====== Orders ====== */
+function renderOrders(){
+  if(!ordersListEl) return;
+  ordersListEl.innerHTML='';
+  if(orders.length===0){ noOrdersEl.style.display='block'; return; }
+  noOrdersEl.style.display='none';
+  orders.forEach(o=>{
+    const box = document.createElement('div'); box.className='order-card';
+    box.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center"><div><h4 style="margin:0">Заказ ${o.id}</h4><div class="muted" style="margin-top:4px">${o.date}</div></div><div style="font-weight:900;color:var(--white)">${o.total.toFixed(2)} сом</div></div>
+      <div style="margin-top:8px">${o.items.map(it=>`<div style="display:flex;justify-content:space-between"><div>${it.name} x${it.quantity}</div><div class="muted">${(it.price*it.quantity).toFixed(2)} сом</div></div>`).join('')}</div>`;
+    ordersListEl.appendChild(box);
+  });
+}
+
+/* ====== Profile ====== */
+function renderProfile(){ document.getElementById('profileName').innerText = profile.name || 'Гость'; document.getElementById('profilePhone').innerText = profile.phone || '+992000008588'; document.getElementById('avatarLetter').innerText = (profile.name && profile.name[0]) ? profile.name[0].toUpperCase() : 'Г'; }
+function editProfile(){ const n = prompt('Введите имя', profile.name||''); const p = prompt('Введите телефон', profile.phone||''); if(n) profile.name = n; if(p) profile.phone = p; saveState(); renderProfile(); showToast('Профиль обновлён'); }
+function openPaymentSettings(){ nav('profile'); showToast('Настройка оплаты -- пока симуляция'); }
+
+/* ====== Search ====== */
+function applySearch(){
+  const q = document.getElementById('search').value.trim().toLowerCase();
+  if(!q){ renderHome(); renderMenuFull(); return; }
+  const found = MENU.filter(m => m.name.toLowerCase().includes(q) || (m.category && m.category.toLowerCase().includes(q)));
+  menuList.innerHTML = '';
+  found.slice(0,6).forEach(item=>{
+    const node = document.createElement('div'); node.className='menu-item';
+    node.innerHTML = `<img class="thumb" src="${item.img}"><div class="menu-info"><h3>${item.name}</h3><div class="muted">${item.category}</div></div><div class="menu-right"><div class="price">${item.price} сом</div></div>`;
+    menuList.appendChild(node);
+  });
+  if(menuListFull){ menuListFull.innerHTML=''; found.forEach(item=>{
+    const node=document.createElement('div'); node.className='menu-item'; node.style.justifyContent='space-between';
+    node.innerHTML = `<img class="thumb" src="${item.img}"><div class="menu-info"><h3>${item.name}</h3><div class="muted">${item.category}</div></div><div class="menu-right"><div class="price">${item.price} сом</div></div>`;
+    menuListFull.appendChild(node);
+  }); }
+}
+
+/* ====== Reviews ====== */
+function renderReviews(){
+  if(!reviewsListEl) return;
+  reviewsListEl.innerHTML = '';
+  if(reviews.length===0){ reviewsListEl.innerHTML = '<div class="muted">Пока нет отзывов</div>'; return; }
+  reviews.forEach((r,i)=>{
+    const div = document.createElement('div'); div.className='review-item';
+    div.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center"><div><b>${escapeHtml(r.name)}</b><div class="muted" style="font-size:12px">${r.date}</div></div><button onclick="removeReview(${i})" style="background:transparent;border:none;color:var(--danger);cursor:pointer">Удалить</button></div><div style="margin-top:8px">${escapeHtml(r.text)}</div>`;
+    reviewsListEl.appendChild(div);
+  });
+}
+function submitReview(e){ e.preventDefault(); const name = document.getElementById('revName').value.trim() || 'Гость'; const text = document.getElementById('revText').value.trim(); if(!text){ showToast('Введите текст отзыва'); return; } const r = {name,text,date:new Date().toLocaleString()}; reviews.unshift(r); saveState(); renderReviews(); document.getElementById('revName').value=''; document.getElementById('revText').value=''; showToast('Спасибо за отзыв!'); }
+function removeReview(i){ reviews.splice(i,1); saveState(); renderReviews(); }
+function clearReviews(){ if(confirm('Очистить все отзывы?')){ reviews=[]; saveState(); renderReviews(); } }
+
+/* ====== Helpers ====== */
+function saveState(){ localStorage.setItem('cb_menu', JSON.stringify(MENU)); localStorage.setItem('cb_cart', JSON.stringify(cart)); localStorage.setItem('cb_orders', JSON.stringify(orders)); localStorage.setItem('cb_profile', JSON.stringify(profile)); localStorage.setItem('cb_reviews', JSON.stringify(reviews)); }
+function showToast(msg){
+  const t = document.createElement('div');
+  t.innerText = msg;
+  Object.assign(t.style, {
+    position:'fixed', left:'50%', transform:'translateX(-50%)',
+    bottom:'120px',
+    background:'#fff', color:'#000',
+    padding:'8px 12px', borderRadius:'10px', fontWeight:800, zIndex:99999
+  });
+  document.body.appendChild(t);
+  setTimeout(()=>t.remove(),1600);
+}
+function escapeHtml(s){ return String(s).replace(/[&<>"']/g, function(m){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]; }); }
+
+/* ====== Restore storage on load ====== */
+window.addEventListener('DOMContentLoaded', () => {
+  try{
+    MENU = JSON.parse(localStorage.getItem('cb_menu')) || MENU;
+    cart = JSON.parse(localStorage.getItem('cb_cart')) || cart;
+    orders = JSON.parse(localStorage.getItem('cb_orders')) || orders;
+    profile = JSON.parse(localStorage.getItem('cb_profile')) || profile;
+    reviews = JSON.parse(localStorage.getItem('cb_reviews')) || reviews;
+  }catch(e){}
+});
+
+/* Expose for debug */ window.__CB = {MENU, cart, orders, profile, reviews};
+</script>
+</body>
+</html>
