@@ -1,11 +1,12 @@
 {
   "name": "Чиз-Биз",
   "short_name": "Чиз-Биз",
-  "description": "Онлайн-сервис Чиз-Биз — доставка, оплата и меню.",
+  "description": "Онлайн-сервис для бизнеса и инвесторов в Таджикистане",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#000000",
   "theme_color": "#000000",
+  "orientation": "portrait",
   "icons": [
     {
       "src": "https://raw.githubusercontent.com/amirikromov425-afk/chizbiz/main/icons/icon-192.png",
