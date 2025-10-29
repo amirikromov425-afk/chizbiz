@@ -494,3 +494,12 @@ window.addEventListener('DOMContentLoaded', () => {
 </script>
 </body>
 </html>
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function() {
+      navigator.serviceWorker.register('/service-worker.js')
+        .then(() => console.log('Service Worker зарегистрирован ✅'))
+        .catch(err => console.log('Ошибка регистрации Service Worker:', err));
+    });
+  }
+</script>
