@@ -1,20 +1,21 @@
 {
   "name": "Чиз-Биз",
-  "short_name": "Чиз-Биз",
-  "description": "Онлайн-сервис для бизнеса и инвесторов в Таджикистане",
-  "start_url": "/",
+  "short_name": "ЧизБиз",
+  "description": "Онлайн-сервис — ваш бизнес в телефоне",
+  "start_url": "/index.html",
   "display": "standalone",
   "background_color": "#000000",
   "theme_color": "#000000",
   "orientation": "portrait",
+  "scope": "/",
   "icons": [
     {
-      "src": "https://raw.githubusercontent.com/amirikromov425-afk/chizbiz/main/icons/icon-192.png",
+      "src": "/icons/icon-192.png",
       "sizes": "192x192",
       "type": "image/png"
     },
     {
-      "src": "https://raw.githubusercontent.com/amirikromov425-afk/chizbiz/main/icons/icon-512.png",
+      "src": "/icons/icon-512.png",
       "sizes": "512x512",
       "type": "image/png"
     }
